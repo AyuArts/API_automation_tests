@@ -1,5 +1,5 @@
 from config import settings
-from core.clients import BaseClient
+from core.base_clients import BaseClient
 
 
 class UserClient(BaseClient):

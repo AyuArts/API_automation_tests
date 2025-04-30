@@ -3,7 +3,7 @@ import pytest
 from playwright.sync_api import sync_playwright
 
 from config import settings
-from core.clients import BaseClient
+from core.base_clients import BaseClient
 from core.logger import Logger
 
 log = Logger().get_logger("BaseTest")
