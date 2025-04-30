@@ -1,283 +1,210 @@
-# 📋 Petstore API Test Plan
+# 📋 GoRest API Test Plan
 
 ---
 
-# 🐾 Pet API Tests – `POST /pet/{petId}/uploadImage`
+## 👤 User API Tests – `/public/v2/users`
 
-### **Test #0** – Upload valid `.jpg` file
+### **Test 0** – Create a new user
 
 **Check:**
 
-- ✅ Response code is **200 OK**
-- ✅ Response body contains confirmation of upload (e.g., `"uploaded"` or file info)
+- ✅ Response code: `201 Created`
+- ✅ Response body contains user ID and correct user details
 
 ---
 
-### **Test #1** – Upload request without file
+### **Test 1** – Get user by ID
 
 **Check:**
 
-- ✅ Response code is **200 OK** or **400 Bad Request**
-- ✅ Error message or explanation about missing file
+- ✅ Response code: `200 OK`
+- ✅ Response body matches the created user data
 
 ---
 
-### **Test #2** – Upload with invalid `petId`
+### **Test 2** – Update user information
 
 **Check:**
 
-- ✅ Response code is **400 Bad Request** or **404 Not Found**
-- ✅ No internal server error or crash
+- ✅ Response code: `200 OK`
+- ✅ Updated fields are reflected in the response
 
 ---
 
-### **Test #3** – Upload file with invalid format (e.g., `.exe`)
+### **Test 3** – Delete user
 
 **Check:**
 
-- ✅ Response code is **400 Bad Request**
-- ✅ Error message describes unsupported file type
+- ✅ Response code: `204 No Content`
+- ✅ Trying to get deleted user returns `404 Not Found`
 
 ---
 
-### **Test #4** – Upload with SQL Injection payload (e.g., filename: `' OR '1'='1.jpg`)
+### **Test 4** – Create user with missing fields
 
 **Check:**
 
-- ✅ Response code is **200 OK** or **400 Bad Request**
-- ✅ Server does **not** crash or leak data
+- ✅ Response code: `422 Unprocessable Entity`
+- ✅ Error messages indicate which fields are missing
 
 ---
 
-### **Test #5** – Upload file simulating XSS attack (e.g., `.html` with `<script>`)
+### **Test 5** – Create user with duplicate email
 
 **Check:**
 
-- ✅ Response code is **200 OK** or **400 Bad Request**
-- ✅ Uploaded content is **not executed** or returned unsanitized
+- ✅ Response code: `422 Unprocessable Entity`
+- ✅ Error message about email already being taken
 
 ---
 
-### **Test #6** – Stress test with multiple parallel uploads
+### **Test 6** – Get list of users with pagination
 
 **Check:**
 
-- ✅ Server remains stable under load
-- ✅ No **5xx** errors or slowdowns
+- ✅ Response code: `200 OK`
+- ✅ Response body contains multiple users
 
 ---
 
-### **Test #7** – Upload large file (~5 MB)
+### **Test 7** – Filter users by gender or status
 
 **Check:**
 
-- ✅ Response code is **200 OK**, or
-- ✅ Response code is **413 Payload Too Large** if server limits exceeded
+- ✅ Response code: `200 OK`
+- ✅ Only users matching the filter are returned
 
 ---
 
-### **Test #8** – Upload tiny file (1 byte)
+### **Test 8** – Get user with invalid ID
 
 **Check:**
 
-- ✅ Response code is **200 OK**
-- ✅ File is accepted or rejected with clear reason
+- ✅ Response code: `404 Not Found`
+- ✅ Proper error message in the response
 
 ---
 
-### **Test #9** – Upload file with special characters in filename
+## 📅 Post API Tests – `/public/v2/posts`
+
+### **Test 0** – Create a post for a user
 
 **Check:**
 
-- ✅ Response code is **200 OK**
-- ✅ File name is handled safely (no path traversal, encoding issues)
+- ✅ Response code: `201 Created`
+- ✅ Post is linked to the correct user ID
 
 ---
 
-# 👤 User API Tests – `/user`
-
-### **Test #0** – Create new user
+### **Test 1** – Get post by ID
 
 **Check:**
 
-- ✅ Response code is **200 OK**
-- ✅ Message contains user ID
+- ✅ Response code: `200 OK`
+- ✅ Post details match the created content
 
 ---
 
-### **Test #1** – Get created user
+### **Test 2** – Update a post
 
 **Check:**
 
-- ✅ Response code is **200 OK**
-- ✅ Correct user data is returned
+- ✅ Response code: `200 OK`
+- ✅ Changes are reflected correctly
 
 ---
 
-### **Test #2** – Login with correct credentials
+### **Test 3** – Delete a post
 
 **Check:**
 
-- ✅ Response code is **200 OK**
-- ✅ Response includes login session/token
+- ✅ Response code: `204 No Content`
+- ✅ Retrieving deleted post returns `404 Not Found`
 
 ---
 
-### **Test #3** – Logout user
+### **Test 4** – Create a post without required fields
 
 **Check:**
 
-- ✅ Response code is **200 OK**
-- ✅ Confirmation message is returned
+- ✅ Response code: `422 Unprocessable Entity`
+- ✅ Proper validation error message
 
 ---
 
-### **Test #4** – Login with wrong password
+## 💬 Comment API Tests – `/public/v2/comments`
+
+### **Test 0** – Create a comment for a post
 
 **Check:**
 
-- ✅ Response code is **400 Bad Request**
-- ✅ Error message explains the failure
+- ✅ Response code: `201 Created`
+- ✅ Comment is linked to the correct post ID
 
 ---
 
-### **Test #5** – Create user missing required field
+### **Test 1** – Get comment by ID
 
 **Check:**
 
-- ✅ Response code is **400 Bad Request**
-- ✅ Message indicates which field is missing
+- ✅ Response code: `200 OK`
+- ✅ Comment details match the created data
 
 ---
 
-### **Test #6** – Update user info
+### **Test 2** – Update a comment
 
 **Check:**
 
-- ✅ Response code is **200 OK**
-- ✅ Changes are applied successfully
+- ✅ Response code: `200 OK`
+- ✅ Changes are reflected correctly
 
 ---
 
-### **Test #7** – Get updated user
+### **Test 3** – Delete a comment
 
 **Check:**
 
-- ✅ Response code is **200 OK**
-- ✅ Updated fields match submitted data
+- ✅ Response code: `204 No Content`
+- ✅ Retrieving deleted comment returns `404 Not Found`
 
 ---
 
-### **Test #8** – Delete user
+### **Test 4** – Create comment without required fields
 
 **Check:**
 
-- ✅ Response code is **200 OK**
-- ✅ User is no longer accessible
+- ✅ Response code: `422 Unprocessable Entity`
+- ✅ Proper validation error message
 
 ---
 
-### **Test #9** – Get deleted user
+## 🔐 Authorization and Token Tests
+
+### **Test 0** – Send request without Authorization token
 
 **Check:**
 
-- ✅ Response code is **404 Not Found**
-- ✅ Message indicates user does not exist
+- ✅ Response code: `401 Unauthorized`
+- ✅ Error message about missing or invalid token
 
 ---
 
-# 🏬 Store API Tests – `/store`
-
-### **Test #0** – Place new order
+### **Test 1** – Send request with invalid Authorization token
 
 **Check:**
 
-- ✅ Response code is **200 OK**
-- ✅ Response includes correct order data
+- ✅ Response code: `401 Unauthorized`
+- ✅ Proper error handling without server crash
 
 ---
 
-### **Test #1** – Get placed order
+# ✅ **Summary:**
 
-**Check:**
+- 9 User API tests
+- 5 Post API tests
+- 5 Comment API tests
+- 2 Authorization tests
 
-- ✅ Response code is **200 OK**
-- ✅ Order details match the request
+🔹 **Total: 21 structured API test scenarios**
 
----
-
-### **Test #2** – Delete placed order
-
-**Check:**
-
-- ✅ Response code is **200 OK**
-- ✅ Order is removed successfully
-
----
-
-### **Test #3** – Get deleted order
-
-**Check:**
-
-- ✅ Response code is **404 Not Found**
-- ✅ Message explains the order is missing
-
----
-
-### **Test #4** – Place order missing fields
-
-**Check:**
-
-- ✅ Response code is **400 Bad Request**
-- ✅ Clear validation error message
-
----
-
-### **Test #5** – Get store inventory
-
-**Check:**
-
-- ✅ Response code is **200 OK**
-- ✅ Response body is a dictionary
-
----
-
-### **Test #6** – Check inventory statuses
-
-**Check:**
-
-- ✅ Status keys like `sold`, `available`, `pending` are present
-- ✅ Values are valid integers
-
----
-
-### **Test #7** – Place order with very large quantity
-
-**Check:**
-
-- ✅ Response code is **200 OK** (if allowed), or
-- ✅ Appropriate limit error is returned
-
----
-
-### **Test #8** – Delete non-existing order
-
-**Check:**
-
-- ✅ Response code is **404 Not Found**
-- ✅ Error message describes the issue
-
----
-
-### **Test #9** – Stress test placing orders
-
-**Check:**
-
-- ✅ Server remains stable under load
-- ✅ Most requests succeed (no 5xx)
-
-# ✅ Total:
-
-- 10 тестов на **Pet API**
-- 10 тестов на **User API**
-- 10 тестов на **Store API**
