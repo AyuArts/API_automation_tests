@@ -1,13 +1,26 @@
-from pydantic import BaseModel, Field
-from pydantic_settings import BaseSettings
+import os
+
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+from clients.endpoints import Endpoints
 
 
-class ApiSettings(BaseModel):
-    base_url: str = "http://localhost:8080"
+class ApiSettings(BaseSettings):
+    base_url: str = "https://gorest.co.in"
+    token: str
 
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=os.path.join(os.path.dirname(__file__), ".env"),
+        case_sensitive=False,
+        env_prefix="APP_CONFIG__",
+        env_nested_delimiter="__",
+    )
+
     api: ApiSettings = Field(default_factory=ApiSettings)
+    endpoints: Endpoints = Field(default_factory=Endpoints)
 
 
 settings = Settings()
