@@ -6,7 +6,7 @@ from config import settings
 from core.base_test import BaseTest
 from core.logger import Logger
 from core.utils import user_gen, EmailError
-from models.user_model import UserBase
+from models.user_model import UserResponse
 
 log = Logger().get_logger("Test_UserClient")
 
@@ -34,7 +34,7 @@ class TestUserClient(BaseTest):
 
         Steps:
         1. Send a request to create a user using valid data.
-        2. Assert the response using the Pydantic UserBase model.
+        2. Assert the response using the Pydantic UserResponse model.
         """
         with allure.step("Step 1: Send request to create a new user"):
             log.info("Creating a user with valid data.")
@@ -42,7 +42,7 @@ class TestUserClient(BaseTest):
 
         with allure.step("Step 2: Validate response model"):
             log.info("Validating user model structure.")
-            assert UserBase(**response.json())
+            assert UserResponse(**response.json())
 
     @allure.title("Fail to create user with duplicated email")
     @allure.story("Negative: Duplicated email should trigger validation error")
