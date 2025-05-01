@@ -1,67 +1,3 @@
-"""data_generators.py
-====================
-
-Type‑safe, reproducible factories that generate valid **and** intentionally
-invalid payloads for typical REST resources — users, posts and comments.
-The public API is minimal: call the generator to get a `dict`; flip
-`invalid=True` or pass an `error_type` Enum to corrupt the data.
-
----
-Quick usage guide
-
-from data_generators import (
-    set_seed, RandomUser, RandomPost, RandomComment,
-    CommonError, EmailError,
-)
-
-0)  Make results deterministic (optional)
-set_seed(42)
-
-1)  A valid user payload
-user_gen = RandomUser()
-user_payload = user_gen()  # same as user_gen(invalid=False)
-
-2)  Same user but with an invalid e‑mail address
-bad_user = user_gen(invalid=True, error_type=EmailError.INVALID)
-
-3)  Valid post for that user (requires user_id)
-post_gen = RandomPost()
-post_payload = post_gen(parent_id=123)
-
-4)  Post with *two* title errors: empty + too long
-broken_post = post_gen(
-    parent_id=123,
-    invalid=True,
-    error_type=[CommonError.EMPTY, CommonError.TOO_LONG],
-)
-
-5)  Comment with an overridden body and invalid e‑mail
-comment_gen = RandomComment()
-comment_payload = comment_gen(
-    parent_id=999,
-    invalid=True,
-    error_type=EmailError.INVALID,
-    body="Great article!",  # override field on the fly
-)
-
-6)  Typical pytest parametrisation
-import pytest
-
-@pytest.mark.parametrize(
-    "comment_data",
-    [
-        RandomComment()(parent_id=1),  # valid
-        RandomComment()(parent_id=1, invalid=True, error_type=CommonError.EMPTY),
-        RandomComment()(parent_id=1, invalid=True, error_type=EmailError.INVALID),
-    ],
-)
-def test_create_comment(api_client, comment_data):
-    resp = api_client.create_comment(comment_data)
-    assertions
-"""
-
-from __future__ import annotations
-
 import random
 from abc import ABC, abstractmethod
 from copy import deepcopy
@@ -255,7 +191,9 @@ class RandomUser(DataGenerator, ErrorInjectionMixin):
         self.email = email_variant or FieldVariant(lambda: self._auto_email())
 
     def _auto_email(self) -> str:
-        return f"{self._name.replace(' ', '.').lower()}@example.com"
+        unique = random.randrange(1_000_000)
+        local = self._name.replace(" ", ".").lower()
+        return f"{local}.{unique}@example.com"
 
     # ------------------------------------------------------------------ valid
     def valid(self, parent_id: Optional[int] = None) -> dict:

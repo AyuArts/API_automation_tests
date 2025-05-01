@@ -1,10 +1,10 @@
-# base_client.py
 import json
 from abc import ABC
 from typing import Any, Iterable
 
 import allure
 import pytest
+import requests
 from playwright.sync_api import APIRequestContext, Response
 
 from core.decorators import retry_on_failure
@@ -122,3 +122,20 @@ class BaseClient(ABC):
             logger.error(msg)
             pytest.fail(msg)
         return resp
+
+
+BASE_URL = "https://gorest.co.in/public/v2"
+
+
+def _existing_id(endpoint: str) -> int:
+    return requests.get(f"{BASE_URL}/{endpoint}", timeout=10).json()[0]["id"]
+
+
+def user_id_with_posts() -> int:
+    return requests.get(f"{BASE_URL}/posts", params={"per_page": 1}, timeout=10).json()[
+        0
+    ]["user_id"]
+
+
+VALID_USER_ID = _existing_id(endpoint="users")
+VALID_POST_ID = _existing_id(endpoint="posts")
