@@ -17,7 +17,7 @@ class UserClient(BaseClient):
         :return: Response object from the POST request.
         """
         return self.post(
-            endpoint=settings.endpoints.user.create_user,
+            endpoint=settings.endpoints.user.create,
             data=data,
             expected_status=status,
         )
@@ -31,7 +31,7 @@ class UserClient(BaseClient):
         :return: Response object from the GET request.
         """
         return self.get(
-            endpoint=settings.endpoints.user.get_list_users,
+            endpoint=settings.endpoints.user.list,
             expected_status=status,
             params=params,
         )
@@ -45,7 +45,7 @@ class UserClient(BaseClient):
         :return: Response object from the GET request.
         """
         return self.get(
-            endpoint=settings.endpoints.user.get_user.format(user_id=user_id),
+            endpoint=settings.endpoints.user.get.format(id=user_id),
             expected_status=status,
         )
 
@@ -82,7 +82,7 @@ class UserClient(BaseClient):
         :return: Response object from the DELETE request.
         """
         return self.delete(
-            endpoint=settings.endpoints.user.delete_user.format(user_id=user_id),
+            endpoint=settings.endpoints.user.delete.format(id=user_id),
             expected_status=status,
         )
 
@@ -96,7 +96,7 @@ class UserClient(BaseClient):
         :return: Response object from the PUT request.
         """
         return self.put(
-            endpoint=settings.endpoints.user.update_user.format(user_id=user_id),
+            endpoint=settings.endpoints.user.update.format(id=user_id),
             data=data,
             expected_status=status,
         )

@@ -18,7 +18,7 @@ class PostClient(BaseClient):
         :return: Response object.
         """
         return self.post(
-            endpoint=settings.endpoints.post.create_post,
+            endpoint=settings.endpoints.post.create,
             data=data,
             expected_status=status,
         )
@@ -31,7 +31,7 @@ class PostClient(BaseClient):
         :return: Response object.
         """
         return self.get(
-            endpoint=settings.endpoints.post.get_post.format(post_id=post_id),
+            endpoint=settings.endpoints.post.get.format(id=post_id),
             expected_status=status,
         )
 
@@ -44,7 +44,7 @@ class PostClient(BaseClient):
         :return: Response object.
         """
         return self.put(
-            endpoint=settings.endpoints.post.update_post.format(post_id=post_id),
+            endpoint=settings.endpoints.post.update.format(id=post_id),
             data=data,
             expected_status=status,
         )
@@ -57,7 +57,7 @@ class PostClient(BaseClient):
         :return: Response object.
         """
         return self.delete(
-            endpoint=settings.endpoints.post.delete_post.format(post_id=post_id),
+            endpoint=settings.endpoints.post.delete.format(id=post_id),
             expected_status=status,
         )
 
@@ -70,7 +70,7 @@ class PostClient(BaseClient):
         :return: Response object.
         """
         return self.get(
-            endpoint=settings.endpoints.post.get_list_posts,
+            endpoint=settings.endpoints.post.list,
             params=params,
             expected_status=status,
         )
