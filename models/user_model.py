@@ -1,9 +1,9 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 
 
-class UserBase(BaseModel):
+class UserResponse(BaseModel):
     id: int
     name: str
-    email: EmailStr
+    email: str
     gender: str
     status: str

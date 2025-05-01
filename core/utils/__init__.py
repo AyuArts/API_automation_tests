@@ -1,3 +1,18 @@
-__all__ = ["user"]
+__all__ = [
+    "RandomUser",
+    "RandomPost",
+    "RandomComment",
+    "CommonError",
+    "EmailError",
+]
 
-from .random_user import user
+from .data_generators import (
+    set_seed,
+    RandomUser,
+    RandomPost,
+    RandomComment,
+    CommonError,
+    EmailError,
+)
+
+set_seed(42)
