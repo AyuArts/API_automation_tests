@@ -23,7 +23,7 @@ class PostClient(BaseClient):
             expected_status=status,
         )
 
-    def get_post(self, status: int):
+    def get_post(self, status: int, post_id):
         """
         Retrieve a single post.
 
@@ -31,11 +31,11 @@ class PostClient(BaseClient):
         :return: Response object.
         """
         return self.get(
-            endpoint=settings.endpoints.post.get_post,
+            endpoint=settings.endpoints.post.get_post.format(post_id=post_id),
             expected_status=status,
         )
 
-    def update_post(self, status: int, data: dict):
+    def update_post(self, status: int, data: dict, post_id):
         """
         Update an existing post.
 
@@ -44,12 +44,12 @@ class PostClient(BaseClient):
         :return: Response object.
         """
         return self.put(
-            endpoint=settings.endpoints.post.update_post,
+            endpoint=settings.endpoints.post.update_post.format(post_id=post_id),
             data=data,
             expected_status=status,
         )
 
-    def delete_post(self, status: int):
+    def delete_post(self, status: int, post_id):
         """
         Delete a post.
 
@@ -57,7 +57,7 @@ class PostClient(BaseClient):
         :return: Response object.
         """
         return self.delete(
-            endpoint=settings.endpoints.post.delete_post,
+            endpoint=settings.endpoints.post.delete_post.format(post_id=post_id),
             expected_status=status,
         )
 
@@ -92,3 +92,6 @@ class PostClient(BaseClient):
         :return: Integer post ID.
         """
         return self.get_first_post(params=params)["id"]
+
+    def get_user_id_with_posts(self):
+        return self.get_first_post()["user_id"]

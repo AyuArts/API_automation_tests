@@ -30,7 +30,7 @@ class UserEndpoints(BaseEndpoints):
 class PostEndpoints(BaseEndpoints):
     @property
     def create_post(self) -> str:
-        return f"{self.base}/post"
+        return f"{self.base}/posts"
 
     @property
     def get_list_posts(self) -> str:
