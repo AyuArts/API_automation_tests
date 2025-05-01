@@ -32,7 +32,7 @@ class TestPostClient(BaseTest):
     """
 
     @pytest.fixture(autouse=True)
-    def setup(self, setup_and_teardown):
+    def setup(self, _init_context):
         self.post = PostClient(self.request_context)
         self.user = UserClient(self.request_context)
         self.user_id = self.user.get_user_id()

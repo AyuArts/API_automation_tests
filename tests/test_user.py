@@ -22,7 +22,7 @@ class TestUserClient(BaseTest):
     """
 
     @pytest.fixture(autouse=True)
-    def setup(self, setup_and_teardown):
+    def setup(self, _init_context):
         self.client = UserClient(self.request_context)
 
     @allure.title("Create a user with valid data")

@@ -1,8 +1,8 @@
+import time
+
 import allure
 import pytest
-from playwright.sync_api import sync_playwright
 
-from config import settings
 from core.logger import Logger
 
 log = Logger().get_logger("BaseTest")
@@ -10,38 +10,25 @@ log = Logger().get_logger("BaseTest")
 
 class BaseTest:
     """
-    Basic class for API tests with Playwright.
-    Responses the initialization of request_context, API clients and logs.
+    Playwright API test base.
+
+    • Exposes a session-wide APIRequestContext as self.request_context
+      (injected from the pw_context fixture).
+
+    • Logs start/finish of every test (console + Allure) and shows run time.
     """
 
     @pytest.fixture(autouse=True)
-    def setup_and_teardown(self, request):
-        test_name = request.node.name
-        with allure.step(f"Start test: {test_name}"):
-            log.info(f"Start test: {test_name}")
-            try:
-                self.playwright = sync_playwright().start()
-                self.request_context = self.playwright.request.new_context(
-                    base_url=settings.api.base_url,
-                    extra_http_headers={
-                        "Content-Type": "application/json",
-                        "Authorization": f"Bearer {settings.api.token}",
-                    },
-                )
-                log.info(
-                    f"Playwright RequestContext initialized: {settings.api.base_url}"
-                )
-            except Exception as e:
-                log.exception(f"The error at setup: {str(e)}")
-                raise
+    def _init_context(self, pw_context, request):
+        """Attach pw_context and wrap the test with simple timing/logging."""
+        self.request_context = pw_context
 
-        yield
+        test_id = request.node.nodeid
+        start = time.perf_counter()
+        log.info(f"▼ Start test: {test_id}")
+        with allure.step(f"Start test: {test_id}"):
+            yield
 
-        with allure.step(f"Teardown test: {test_name}"):
-            try:
-                self.request_context.dispose()
-                self.playwright.stop()
-                log.info(f"Playwright RequestContext closed for the test: {test_name}")
-            except Exception as e:
-                log.exception(f"The error at teardown: {str(e)}")
-                raise
+        log.info(f"▲ End test: {test_id} – {time.perf_counter() - start:.2f}s")
+        with allure.step(f"End test: {test_id}"):
+            pass
