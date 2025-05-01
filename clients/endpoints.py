@@ -1,54 +1,49 @@
+# endpoints.py
+from dataclasses import dataclass
+from typing import Final
+
 from pydantic import BaseModel, Field
 
-
-class BaseEndpoints(BaseModel):
-    base: str = "public/v2"
+API_ROOT: Final[str] = "public/v2"
 
 
-class UserEndpoints(BaseEndpoints):
-    @property
-    def create_user(self) -> str:
-        return f"{self.base}/users"
+@dataclass(frozen=True, slots=True)
+class ResourceURLs:
+    """
+    Stores CRUD endpoints for a single REST resource.
 
-    @property
-    def get_list_users(self) -> str:
-        return self.create_user
+    >>> user = ResourceURLs("users")
+    >>> user.create              # 'public/v2/users'
+    >>> user.get                 # 'public/v2/users/{id}'
+    >>> user.update              # 'public/v2/users/{id}'
+    >>> user.delete              # 'public/v2/users/{id}'
+    >>> user.list                # same as .create
+    """
 
-    @property
-    def get_user(self) -> str:
-        return f"{self.create_user}/{{user_id}}"
-
-    @property
-    def update_user(self) -> str:
-        return f"{self.create_user}/{{user_id}}"
+    name: str
 
     @property
-    def delete_user(self) -> str:
-        return f"{self.create_user}/{{user_id}}"
-
-
-class PostEndpoints(BaseEndpoints):
-    @property
-    def create_post(self) -> str:
-        return f"{self.base}/posts"
+    def create(self) -> str:
+        return f"{API_ROOT}/{self.name}"
 
     @property
-    def get_list_posts(self) -> str:
-        return self.create_post
+    def list(self) -> str:
+        return self.create
 
     @property
-    def get_post(self) -> str:
-        return f"{self.create_post}/{{post_id}}"
+    def get(self) -> str:
+        return f"{self.create}/{{id}}"
 
     @property
-    def update_post(self) -> str:
-        return f"{self.create_post}/{{post_id}}"
+    def update(self) -> str:
+        return self.get
 
     @property
-    def delete_post(self) -> str:
-        return f"{self.create_post}/{{post_id}}"
+    def delete(self) -> str:
+        return self.get
 
 
 class Endpoints(BaseModel):
-    user: UserEndpoints = Field(default_factory=UserEndpoints)
-    post: PostEndpoints = Field(default_factory=PostEndpoints)
+    user: ResourceURLs = Field(default_factory=lambda: ResourceURLs("users"))
+    post: ResourceURLs = Field(default_factory=lambda: ResourceURLs("posts"))
+    comment: ResourceURLs = Field(default_factory=lambda: ResourceURLs("comments"))
