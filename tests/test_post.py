@@ -6,7 +6,7 @@ from clients.user_client import UserClient
 from config import settings
 from core.base_test import BaseTest
 from core.logger import Logger
-from core.utils.random_post import post_gen
+from core.utils import post_gen, CommonError
 from models.post_model import PostResponse, PostRequest
 
 log = Logger().get_logger("Test_PostClient")
@@ -51,7 +51,7 @@ class TestPostClient(BaseTest):
         3. Assert the response using PostResponse model.
         """
         with allure.step("Step 1: Generate valid post data"):
-            data_valid = dict(PostRequest(**post_gen(user_id=self.user_id)))
+            data_valid = dict(PostRequest(**post_gen(parent_id=self.user_id)))
         with allure.step("Step 2: Create a post"):
             response = self.post.create_post(data=data_valid, status=201)
         with allure.step("Step 3: Validate response model"):
@@ -62,9 +62,13 @@ class TestPostClient(BaseTest):
     @pytest.mark.parametrize(
         "title_error, expected_message",
         [
-            ("empty", settings.errors.text.none),
-            ("too_long", settings.errors.text.too_long),
-            ("none", settings.errors.text.none),
+            pytest.param(
+                CommonError.EMPTY, settings.errors.text.none, id="title empty"
+            ),
+            pytest.param(
+                CommonError.TOO_LONG, settings.errors.text.too_long, id="title too long"
+            ),
+            pytest.param(CommonError.NONE, settings.errors.text.none, id="title none"),
         ],
     )
     def test_create_post_invalid_title(self, title_error, expected_message):
@@ -76,9 +80,11 @@ class TestPostClient(BaseTest):
         2. Send a POST request.
         3. Assert the response contains proper validation error for title.
         """
-        with allure.step(f"Step 1: Generate post with invalid title: {title_error}"):
+        with allure.step(
+                f"Step 1: Generate post with invalid title: {title_error.name}"
+        ):
             data = post_gen(
-                user_id=self.user_id, invalid_title=True, title_error=title_error
+                parent_id=self.user_id, invalid=True, error_type=title_error
             )
         with allure.step("Step 2: Try to create post"):
             response = self.post.create_post(data=data, status=422)
@@ -116,7 +122,7 @@ class TestPostClient(BaseTest):
         3. Assert the response contains updated title.
         """
         with allure.step("Step 1: Generate new title"):
-            title = post_gen.title
+            title = post_gen.title.valid
             data_update = {"title": title}
         with allure.step("Step 2: Update the post"):
             response = self.post.update_post(
@@ -129,22 +135,26 @@ class TestPostClient(BaseTest):
     @allure.title("Fail to update post with invalid title")
     @allure.story("Negative: Title validation on update")
     @pytest.mark.parametrize(
-        "title_data, expected_message",
+        "title_builder, expected_message",
         [
             pytest.param(
-                lambda p: p.title_empty, settings.errors.text.none, id="title empty"
+                lambda b: b.title.empty,
+                settings.errors.text.none,
+                id="title empty",
             ),
             pytest.param(
-                lambda p: p.title_too_long,
+                lambda b: b.title.too_long,
                 settings.errors.text.too_long,
                 id="title too long",
             ),
             pytest.param(
-                lambda p: p.title_none, settings.errors.text.none, id="title none"
+                lambda b: b.title.none,
+                settings.errors.text.none,
+                id="title none",
             ),
         ],
     )
-    def test_update_post_invalid(self, title_data, expected_message):
+    def test_update_post_invalid(self, title_builder, expected_message):
         """
         Test updating a post with invalid titles.
 
@@ -154,7 +164,7 @@ class TestPostClient(BaseTest):
         3. Assert validation error is returned for the title field.
         """
         with allure.step("Step 1: Prepare invalid title"):
-            title = title_data(post_gen)
+            title = title_builder(post_gen)
             data_update = {"title": title}
         with allure.step("Step 2: Try to update the post"):
             response = self.post.update_post(

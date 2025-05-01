@@ -5,7 +5,7 @@ from clients.user_client import UserClient
 from config import settings
 from core.base_test import BaseTest
 from core.logger import Logger
-from core.utils import user
+from core.utils import user_gen, EmailError
 from models.user_model import UserBase
 
 log = Logger().get_logger("Test_UserClient")
@@ -38,7 +38,7 @@ class TestUserClient(BaseTest):
         """
         with allure.step("Step 1: Send request to create a new user"):
             log.info("Creating a user with valid data.")
-            response = self.client.create_user(data=user.valid_user, status=201)
+            response = self.client.create_user(data=user_gen(), status=201)
 
         with allure.step("Step 2: Validate response model"):
             log.info("Validating user model structure.")
@@ -60,7 +60,7 @@ class TestUserClient(BaseTest):
             log.info(f"Retrieved existing email: {email}")
 
         with allure.step("Step 2: Attempt to create user with duplicate email"):
-            response = self.client.create_user(data=user.build_user(email), status=422)
+            response = self.client.create_user(data=user_gen(email=email), status=422)
             errors = response.json()
 
         with allure.step("Step 3: Assert validation error for duplicate email"):
@@ -73,19 +73,21 @@ class TestUserClient(BaseTest):
     @allure.title("Fail to create user with invalid email formats")
     @allure.story("Negative: Invalid or empty email should trigger validation error")
     @pytest.mark.parametrize(
-        "user_data, expected_message",
+        "build_payload, expected_message",
         [
             pytest.param(
-                lambda u: u.invalid_email_user,
+                lambda gen: gen(invalid=True, error_type=EmailError.INVALID),
                 settings.errors.text.is_invalid,
-                id="invalid email",
+                id="invalid email format",
             ),
             pytest.param(
-                lambda u: u.email_none_user, settings.errors.text.none, id="empty email"
+                lambda gen: gen(invalid=True, error_type=EmailError.NONE),
+                settings.errors.text.none,
+                id="empty email",
             ),
         ],
     )
-    def test_create_user_invalid_emails(self, user_data, expected_message):
+    def test_create_user_invalid_emails(self, build_payload, expected_message):
         """
         Test invalid or empty email formats.
 
@@ -94,7 +96,7 @@ class TestUserClient(BaseTest):
         2. Assert the returned validation message is correct.
         """
         with allure.step("Step 1: Send request with invalid/empty email"):
-            data = user_data(user)
+            data = build_payload(user_gen)
             response = self.client.create_user(data=data, status=422)
             errors = response.json()
 
