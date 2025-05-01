@@ -1,0 +1,71 @@
+{
+  "user_api": {
+    "test_create_valid": {
+      "title": "Create a user with valid data",
+      "story": "Positive: Create a new user with valid fields",
+      "severity": "critical"
+    },
+    "test_create_invalid": {
+      "title": "Fail to create user with invalid email",
+      "story": "Negative: Email validation"
+    },
+    "test_get_update_delete": {
+      "title": "Full CRUD flow: get / update / delete",
+      "story": "Positive: End-to-end user lifecycle"
+    },
+    "test_list_generic": {
+      "title": "Test user list retrieval with various query parameters",
+      "story": "Positive: Get users list with and without filters"
+    },
+    "test_list_filtered_by_fk": {
+      "title": "Get users list filtered by gender",
+      "story": "Positive: Filter users by gender"
+    }
+  },
+  "post_api": {
+    "test_create_valid": {
+      "title": "Create a post with valid data",
+      "story": "Positive: Successfully create a post",
+      "severity": "critical"
+    },
+    "test_create_invalid": {
+      "title": "Fail to create post with invalid title",
+      "story": "Negative: Title validation scenarios"
+    },
+    "test_get_update_delete": {
+      "title": "Full CRUD flow: get / update / delete",
+      "story": "Positive: End-to-end post lifecycle"
+    },
+    "test_list_generic": {
+      "title": "Get list of posts with and without filters",
+      "story": "Positive: Retrieve posts with different filters"
+    },
+    "test_list_filtered_by_fk": {
+      "title": "Get list of posts filtered by user_id",
+      "story": "Positive: Filter posts by user ID"
+    }
+  },
+  "comment_api": {
+    "test_create_valid": {
+      "title": "Create a comment with valid data",
+      "story": "Positive: Successfully create a comment",
+      "severity": "critical"
+    },
+    "test_create_invalid": {
+      "title": "Fail to create comment with invalid value",
+      "story": "Negative: Value validation scenarios"
+    },
+    "test_get_update_delete": {
+      "title": "Full CRUD flow: get / update / delete",
+      "story": "Positive: End-to-end comment lifecycle"
+    },
+    "test_list_generic": {
+      "title": "Get list of comments with and without filters",
+      "story": "Positive: Retrieve comments with different filters"
+    },
+    "test_list_filtered_by_fk": {
+      "title": "Get list of comments filtered by post_id",
+      "story": "Positive: Filter comments by post ID"
+    }
+  }
+}
